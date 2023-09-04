@@ -22,7 +22,7 @@ const RentalCard = ({ data }) => {
 		>
 			<div className="flex items-center justify-center">
 				<div className="max-w-sm w-full py-6 px-3">
-					<div className="bg-white shadow-xl rounded-lg overflow-hidden w-full h-[30rem]">
+					<div className="bg-white shadow-xl rounded-lg overflow-hidden w-full h-[39rem]">
 						<div>
 							<img
 								src={data?.rental_image_url}

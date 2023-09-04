@@ -14,7 +14,7 @@ class FilterBasedSearch(APIView):
     
     def get(self, request):
        
-            rentals = Rentals.objects.all()
+            rentals = Rentals.objects.filter(renter__isnull=True)
             
             query = request.query_params.get('search')
             max_price = request.query_params.get('max')
