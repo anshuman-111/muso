@@ -1,7 +1,5 @@
 import {
 	Route,
-	Link,
-	Routes,
 	createBrowserRouter,
 	createRoutesFromElements,
 	RouterProvider,
@@ -15,11 +13,11 @@ import Dashboard from "./Components/Dashboard";
 import Login from "./Components/AuthComps/Login";
 import Register from "./Components/AuthComps/Register";
 import PrivateRoute from "./Components/utils/PrivateRoute";
-import PostRental from "./Components/DashComps/PostRental";
 import RentalDetail from "./Components/FeedComps/RentalDetail";
-import AllRentals from "./Components/DashComps/AllRentals";
 import GetRental from "./Components/FeedComps/GetRental";
 import DashRentalDetails from "./Components/DashComps/DashRentalDetails";
+
+
 
 const router = createBrowserRouter(
 	createRoutesFromElements(

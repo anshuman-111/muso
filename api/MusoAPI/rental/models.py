@@ -40,7 +40,7 @@ class Rentals(models.Model):
     rental_title = models.CharField(max_length=100, blank=True, null=True)
     rental_desc = models.CharField(max_length=250, blank=True, null=True)
     rental_frequency = models.CharField(choices=FREQ, max_length=50, blank=True, null=True)
-    rental_rate = models.IntegerField(blank=True, null=True)
+    rental_rate = models.DecimalField(blank=True, null=True, max_digits=10, decimal_places=2)
     rental_instrument_type = models.CharField(
         max_length=255, null=True, blank=True
     )

@@ -24,6 +24,27 @@ class RentalCreateSerialzer(serializers.ModelSerializer):
 
         extra_kwargs = {"rental_id": {"read_only": True}}
 
+class RentalSearchSerialzer(serializers.ModelSerializer):
+    owner_username = serializers.CharField(source='owner.username', read_only=True)
+   
+    class Meta:
+        model = Rentals
+        fields = [
+            "rental_id",
+            "rental_title",
+            "rental_desc",
+            "rental_frequency",
+            "rental_rate",
+            "rental_location",
+            "rental_instrument_type",
+            "rental_avail_start",
+            "rental_image_url",
+            "rental_avail_end",
+            "owner_username",
+        ]
+
+        extra_kwargs = {"rental_id": {"read_only": True}}
+
 class RentalTakeSerialzer(serializers.ModelSerializer):
     class Meta:
         model = Rentals
