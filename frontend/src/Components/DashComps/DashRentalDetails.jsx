@@ -28,12 +28,24 @@ const DashRentalDetails = () => {
 		right: "",
 	});
 	const [isFetched, setIsFetched] = useState(false);
+	const [matchScore, setMatchScore] = useState("");
+	const fetchMatchScore = () => {
+		try {
+			const res = axiosSecure
+				.get(`/rentals/matchrun/${data?.rental_id}`)
+				.then((data) => setMatchScore(data?.data?.score));
+		} catch (err) {
+			console.log(err);
+		}
+	};
+	console.log(matchScore);
 	useEffect(() => {
 		if (type === "taken") {
 			handleFileDownloadFromS3(data?.rental_id, "completion").then((data) => {
 				setFilesRenterObj(data);
 				setIsFetched(true);
 			});
+			fetchMatchScore();
 		}
 		if (type === "posted") {
 			handleFileDownloadFromS3(data?.rental_id, "creation").then((data) => {
@@ -324,6 +336,7 @@ const DashRentalDetails = () => {
 										}
 									/>
 								</div>
+
 								<button
 									className="px-4 py-2 h-24 w-32 bg-indigo-600 mt-10 text-white font-semibold"
 									onClick={() => {
@@ -332,13 +345,18 @@ const DashRentalDetails = () => {
 													Object.values(filesRenterObj),
 													data?.rental_id,
 													"completion",
-											  )
+											  ).then(fetchMatchScore())
 											: window.alert("Please add all files before confirming.");
 									}}
 								>
 									Confirm Upload
 								</button>
 							</div>
+						</div>
+						<div className="text-xl mt-3 text-white text-center">
+							Images uploaded by the Owner and You are{" "}
+							<span className="text-red-400 text-2xl">{matchScore}% </span>
+							similar
 						</div>
 					</>
 				)}
