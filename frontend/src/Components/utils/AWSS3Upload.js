@@ -6,7 +6,7 @@ const handleFileUploadToS3 = async (files, rentalId, type) => {
 
     try{
 
-       
+        
         const S3ServiceObj = new AWS.S3()
         var foldername = rentalId.toString()
         if(type==='display'){

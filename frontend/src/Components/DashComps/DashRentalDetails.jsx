@@ -1,23 +1,57 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import handleFileUploadToS3 from "../utils/AWSS3Upload";
 import { handleFileRenaming } from "../utils/FileRenameForUpload";
-import { axiosSecureInstance } from "../Hooks/AxiosInst";
+import { axiosInstance, axiosSecureInstance } from "../Hooks/AxiosInst";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { handleFileDownloadFromS3 } from "../utils/AWSS3Fetch";
 const DashRentalDetails = () => {
 	const axiosSecure = axiosSecureInstance();
 	const location = useLocation();
 	const data = location.state.data.rentalData;
 	const type = location.state.data.type;
-	const { user } = useContext(AuthContext);
 
-	const [renterPictures, setRenterPictures] = useState({
-		type: "completion",
-		files: [],
+	const [filesRenterObj, setFilesRenterObj] = useState({
+		front: "",
+		back: "",
+		left: "",
+		right: "",
 	});
+
+	const [filesOwnerObj, setFilesOwnerObj] = useState({
+		front: "",
+		back: "",
+		left: "",
+		right: "",
+	});
+	const [isFetched, setIsFetched] = useState(false);
+	useEffect(() => {
+		if (type === "taken") {
+			handleFileDownloadFromS3(data?.rental_id, "completion").then((data) => {
+				setFilesRenterObj(data);
+				setIsFetched(true);
+			});
+		}
+		if (type === "posted") {
+			handleFileDownloadFromS3(data?.rental_id, "creation").then((data) => {
+				setFilesOwnerObj(data);
+				setIsFetched(true);
+			});
+		}
+		if (type === "given") {
+			handleFileDownloadFromS3(data?.rental_id, "completion").then((data) => {
+				setFilesRenterObj(data);
+				setIsFetched(true);
+			});
+			handleFileDownloadFromS3(data?.rental_id, "creation").then((data) => {
+				setFilesOwnerObj(data);
+				setIsFetched(true);
+			});
+		}
+	}, []);
 
 	const handleDeleteRental = () => {
 		try {
@@ -88,7 +122,7 @@ const DashRentalDetails = () => {
 							Owned By {data?.owner_username}
 						</p>
 
-						<p className="title-font font-medium text-lg text-gray-100">
+						<div className="title-font font-medium text-lg text-gray-100">
 							{" "}
 							{data?.renter_username ? (
 								<p className="title-font font-medium text-lg text-gray-100">
@@ -99,8 +133,42 @@ const DashRentalDetails = () => {
 									Not rented yet!
 								</p>
 							)}
-						</p>
+						</div>
 					</div>
+					{!(type === "taken") && (
+						<>
+							<h1 className="my-5 text-white text-xl">
+								Images uploaded by you
+							</h1>
+							<div className="flex flex-row">
+								{Object.values(filesOwnerObj).map((fileSrc) => (
+									<img
+										className="h-80 border-2 border-black p-1"
+										src={fileSrc}
+									/>
+								))}
+							</div>
+						</>
+					)}
+
+					{type === "given" && (
+						<>
+							{Object.values(filesRenterObj).length > 0 ? (
+								<div className="flex flex-row">
+									{Object.values(filesOwnerObj).map((fileSrc) => (
+										<img
+											className="h-80 border-2 border-black p-1"
+											src={fileSrc}
+										/>
+									))}
+								</div>
+							) : (
+								<h1 className="my-5 text-white text-xl">
+									Renter has not uploaded any files yet!
+								</h1>
+							)}
+						</>
+					)}
 				</div>
 				{type === "taken" && (
 					<>
@@ -127,13 +195,12 @@ const DashRentalDetails = () => {
 										className="block w-full px-5 rounded-md border-0 py-2 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 										onChange={(e) =>
 											e.target.files.length > 0
-												? setRenterPictures({
-														...renterPictures,
-														files: [
-															...renterPictures.files,
-
-															handleFileRenaming(e.target.files[0], "front"),
-														],
+												? setFilesRenterObj({
+														...filesRenterObj,
+														front: handleFileRenaming(
+															e.target.files[0],
+															"front",
+														),
 												  })
 												: ""
 										}
@@ -141,8 +208,10 @@ const DashRentalDetails = () => {
 									<img
 										className="h-80 border-2 border-black p-1"
 										src={
-											renterPictures.files.length > 0
-												? URL.createObjectURL(renterPictures.files[0])
+											isFetched
+												? filesRenterObj.front
+												: filesRenterObj.front
+												? URL.createObjectURL(filesRenterObj.front)
 												: ""
 										}
 									/>
@@ -164,13 +233,9 @@ const DashRentalDetails = () => {
 										className="block w-full px-5 rounded-md border-0 py-2 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 										onChange={(e) =>
 											e.target.files.length > 0
-												? setRenterPictures({
-														...renterPictures,
-														files: [
-															...renterPictures.files,
-
-															handleFileRenaming(e.target.files[0], "back"),
-														],
+												? setFilesRenterObj({
+														...filesRenterObj,
+														back: handleFileRenaming(e.target.files[0], "back"),
 												  })
 												: ""
 										}
@@ -178,8 +243,10 @@ const DashRentalDetails = () => {
 									<img
 										className="h-80 border-2 border-black p-1"
 										src={
-											renterPictures.files.length > 1
-												? URL.createObjectURL(renterPictures.files[1])
+											isFetched
+												? filesRenterObj.back
+												: filesRenterObj.back
+												? URL.createObjectURL(filesRenterObj.back)
 												: ""
 										}
 									/>
@@ -201,13 +268,9 @@ const DashRentalDetails = () => {
 										className="block w-full px-5 rounded-md border-0 py-2 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 										onChange={(e) =>
 											e.target.files.length > 0
-												? setRenterPictures({
-														...renterPictures,
-														files: [
-															...renterPictures.files,
-
-															handleFileRenaming(e.target.files[0], "left"),
-														],
+												? setFilesRenterObj({
+														...filesRenterObj,
+														left: handleFileRenaming(e.target.files[0], "left"),
 												  })
 												: ""
 										}
@@ -215,8 +278,10 @@ const DashRentalDetails = () => {
 									<img
 										className="h-80 border-2 border-black p-1"
 										src={
-											renterPictures.files.length > 2
-												? URL.createObjectURL(renterPictures.files[2])
+											isFetched
+												? filesRenterObj.left
+												: filesRenterObj.left
+												? URL.createObjectURL(filesRenterObj.left)
 												: ""
 										}
 									/>
@@ -238,13 +303,12 @@ const DashRentalDetails = () => {
 										className="block w-full px-5 rounded-md border-0 py-2 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 										onChange={(e) =>
 											e.target.files.length > 0
-												? setRenterPictures({
-														...renterPictures,
-														files: [
-															...renterPictures.files,
-
-															handleFileRenaming(e.target.files[0], "right"),
-														],
+												? setFilesRenterObj({
+														...filesRenterObj,
+														right: handleFileRenaming(
+															e.target.files[0],
+															"right",
+														),
 												  })
 												: ""
 										}
@@ -252,8 +316,10 @@ const DashRentalDetails = () => {
 									<img
 										className="h-80 border-2 border-black p-1"
 										src={
-											renterPictures.files.length > 3
-												? URL.createObjectURL(renterPictures.files[3])
+											isFetched
+												? filesRenterObj.right
+												: filesRenterObj.right
+												? URL.createObjectURL(filesRenterObj.right)
 												: ""
 										}
 									/>
@@ -261,13 +327,13 @@ const DashRentalDetails = () => {
 								<button
 									className="px-4 py-2 h-24 w-32 bg-indigo-600 mt-10 text-white font-semibold"
 									onClick={() => {
-										renterPictures.files.length === 4
+										Object.values(filesRenterObj).every((file) => file)
 											? handleFileUploadToS3(
-													renterPictures.files,
+													Object.values(filesRenterObj),
 													data?.rental_id,
-													renterPictures.type,
+													"completion",
 											  )
-											: window.alert(renterPictures.files.length);
+											: window.alert("Please add all files before confirming.");
 									}}
 								>
 									Confirm Upload

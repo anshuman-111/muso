@@ -17,13 +17,14 @@ const PostRental = () => {
 	const { user } = useContext(AuthContext);
 	const nav = useNavigate();
 	const [ownerPictures, setOwnerPictures] = useState({
-		type: "creation",
-		files: [],
+		front: "",
+		back: "",
+		left: "",
+		right: "",
 	});
 
 	const [displayPicture, setDisplayPicture] = useState({
-		type: "display",
-		files: [],
+		display: "",
 	});
 
 	const [filename, setFilename] = useState("");
@@ -54,41 +55,51 @@ const PostRental = () => {
 		event.preventDefault();
 		setLoading(true);
 		try {
-			const res = await axiosSecure
-				.post("/rentals/create", rentalForm)
-				
+			const res = await axiosSecure.post("/rentals/create", rentalForm);
+
 			if (res.status === 200) {
 				try {
-					handleFileUploadToS3(
-						displayPicture.files,
-						res.data,
-						displayPicture.type,
-					).then(() => {
-						try {
-							const urlRes = axiosSecure.post(
-								`/rentals/imageupload/${res.data}`,
-								{
-									img_url: `https://${import.meta.env.VITE_AWS_S3_BUCKET}.s3.${
-										import.meta.env.VITE_AWS_S3_REGION
-									}.amazonaws.com/${res.data}/display/${filename}`,
-								},
-							);
-							if (urlRes.status === 200) {
-								console.log("Display Image Uploaded");
+					if (
+						Object.values(ownerPictures).every((file) => file) &&
+						Object.values(displayPicture).every((file) => file)
+					) {
+						handleFileUploadToS3(
+							Object.values(displayPicture),
+							res.data,
+							"display",
+						).then(() => {
+							try {
+								const urlRes = axiosSecure.post(
+									`/rentals/imageupload/${res.data}`,
+									{
+										img_url: `https://${
+											import.meta.env.VITE_AWS_S3_BUCKET
+										}.s3.${import.meta.env.VITE_AWS_S3_REGION}.amazonaws.com/${
+											res.data
+										}/display/${filename}`,
+									},
+								);
+								if (urlRes.status === 200) {
+									console.log("Display Image Uploaded");
+								}
+							} catch (err) {
+								console.log(err);
+								toast.error(err.response.data.msg, {
+									position: toast.POSITION.TOP_CENTER,
+								});
 							}
-						} catch (err) {
-							console.log(err);
-							toast.error(err.response.data.msg, {
-								position: toast.POSITION.TOP_CENTER,
-							});
-						}
-					});
+						});
 
-					handleFileUploadToS3(
-						ownerPictures.files,
-						res.data,
-						ownerPictures.type,
-					);
+						handleFileUploadToS3(
+							Object.values(ownerPictures),
+							res.data,
+							"creation",
+						);
+					} else {
+						toast.error("Please upload all pictures to proceed", {
+							position: toast.POSITION.TOP_CENTER,
+						});
+					}
 				} catch (err) {
 					console.log(err);
 				}
@@ -338,14 +349,11 @@ const PostRental = () => {
 											onChange={(e) =>
 												e.target.files.length > 0
 													? setDisplayPicture({
-															...displayPicture,
-															files: [
-																handleFileRenaming(
-																	e.target.files[0],
-																	"display",
-																	setFilename,
-																),
-															],
+															display: handleFileRenaming(
+																e.target.files[0],
+																"display",
+																setFilename,
+															),
 													  })
 													: ""
 											}
@@ -353,8 +361,8 @@ const PostRental = () => {
 										<img
 											className="h-80 border-2 border-black p-1"
 											src={
-												displayPicture.files.length > 0
-													? URL.createObjectURL(displayPicture.files[0])
+												displayPicture.display
+													? URL.createObjectURL(displayPicture.display)
 													: ""
 											}
 										/>
@@ -385,14 +393,11 @@ const PostRental = () => {
 													e.target.files.length > 0
 														? setOwnerPictures({
 																...ownerPictures,
-																files: [
-																	...ownerPictures.files,
 
-																	handleFileRenaming(
-																		e.target.files[0],
-																		"front",
-																	),
-																],
+																front: handleFileRenaming(
+																	e.target.files[0],
+																	"front",
+																),
 														  })
 														: ""
 												}
@@ -400,8 +405,8 @@ const PostRental = () => {
 											<img
 												className="h-80 border-2 border-black p-1"
 												src={
-													ownerPictures.files.length > 0
-														? URL.createObjectURL(ownerPictures.files[0])
+													ownerPictures.front
+														? URL.createObjectURL(ownerPictures.front)
 														: ""
 												}
 											/>
@@ -425,11 +430,10 @@ const PostRental = () => {
 													e.target.files.length > 0
 														? setOwnerPictures({
 																...ownerPictures,
-																files: [
-																	...ownerPictures.files,
-
-																	handleFileRenaming(e.target.files[0], "back"),
-																],
+																back: handleFileRenaming(
+																	e.target.files[0],
+																	"back",
+																),
 														  })
 														: ""
 												}
@@ -437,8 +441,8 @@ const PostRental = () => {
 											<img
 												className="h-80 border-2 border-black p-1"
 												src={
-													ownerPictures.files.length > 1
-														? URL.createObjectURL(ownerPictures.files[1])
+													ownerPictures.back
+														? URL.createObjectURL(ownerPictures.back)
 														: ""
 												}
 											/>
@@ -462,11 +466,10 @@ const PostRental = () => {
 													e.target.files.length > 0
 														? setOwnerPictures({
 																...ownerPictures,
-																files: [
-																	...ownerPictures.files,
-
-																	handleFileRenaming(e.target.files[0], "left"),
-																],
+																left: handleFileRenaming(
+																	e.target.files[0],
+																	"left",
+																),
 														  })
 														: ""
 												}
@@ -474,8 +477,8 @@ const PostRental = () => {
 											<img
 												className="h-80 border-2 border-black p-1"
 												src={
-													ownerPictures.files.length > 2
-														? URL.createObjectURL(ownerPictures.files[2])
+													ownerPictures.left
+														? URL.createObjectURL(ownerPictures.left)
 														: ""
 												}
 											/>
@@ -499,14 +502,10 @@ const PostRental = () => {
 													e.target.files.length > 0
 														? setOwnerPictures({
 																...ownerPictures,
-																files: [
-																	...ownerPictures.files,
-
-																	handleFileRenaming(
-																		e.target.files[0],
-																		"right",
-																	),
-																],
+																right: handleFileRenaming(
+																	e.target.files[0],
+																	"right",
+																),
 														  })
 														: ""
 												}
@@ -514,8 +513,8 @@ const PostRental = () => {
 											<img
 												className="h-80 border-2 border-black p-1"
 												src={
-													ownerPictures.files.length > 3
-														? URL.createObjectURL(ownerPictures.files[3])
+													ownerPictures.right
+														? URL.createObjectURL(ownerPictures.right)
 														: ""
 												}
 											/>
