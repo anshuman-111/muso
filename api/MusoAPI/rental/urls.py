@@ -8,7 +8,8 @@ from .views import (
     GetTakenRentalView,
     GetGivenRentalView,
     TakeRental,
-    ImageURLUpload
+    ImageURLUpload,
+    TriggerImageMatch
 )
 
 urlpatterns = [
@@ -20,5 +21,6 @@ urlpatterns = [
     path("getgiven/<userId>", GetGivenRentalView.as_view()),
     path("gettaken/<userId>", GetTakenRentalView.as_view()),
     path("takerental/<rentalId>", TakeRental.as_view()),
-    path("imageupload/<rentalId>", ImageURLUpload.as_view())
+    path("imageupload/<rentalId>", ImageURLUpload.as_view()),
+    path("matchrun/<rentalId>", TriggerImageMatch.as_view())
 ]

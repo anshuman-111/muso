@@ -1,9 +1,10 @@
-import { useState, useEffect, useContext } from 'react'
-import { Link } from 'react-router-dom'
-import {axiosInstance} from '../Hooks/AxiosInst'
-import { useNavigate } from 'react-router-dom'
-import AuthContext from '../context/AuthContext'
-
+import { useState, useEffect, useContext, useCallback } from "react";
+import { Link } from "react-router-dom";
+import { axiosInstance } from "../Hooks/AxiosInst";
+import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Login = () => {
 	const navigate = useNavigate();
 	const [loginForm, setLoginForm] = useState({
@@ -14,8 +15,13 @@ const Login = () => {
 	const [displayMsg, setDisplayMsg] = useState("");
 	const [isDisabled, setDisabled] = useState(true);
 
-	const { user, login, msg, setMsg } = useContext(AuthContext);
-	console.log(user);
+	const { user, login, msg } = useContext(AuthContext);
+
+	const showMsg = useCallback(() => {
+		toast.error(msg, {
+			position: toast.POSITION.TOP_CENTER,
+		});
+	}, [msg]);
 	useEffect(() => {
 		if (user !== null) {
 			navigate("/");
@@ -35,15 +41,16 @@ const Login = () => {
 	const handleLogin = async () => {
 		try {
 			await login(loginForm);
+			showMsg();
 			setTimeout(500);
 		} catch (error) {
 			console.log(error);
 			setMsg("Username or password is incorrect");
 		}
-		console.log(msg);
 	};
 	return (
 		<>
+			<ToastContainer />
 			<div className="flex min-h-full flex-1 flex-col justify-center px-6 py-3 lg:px-8">
 				<div className="sm:mx-auto sm:w-full sm:max-w-sm">
 					<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-bg-secondary">
@@ -83,14 +90,6 @@ const Login = () => {
 								>
 									Password
 								</label>
-								<div className="text-sm">
-									<a
-										href="#"
-										className="font-semibold text-btn-primary hover:text-indigo-500"
-									>
-										Forgot password?
-									</a>
-								</div>
 							</div>
 							<div className="mt-2">
 								<input
@@ -145,9 +144,4 @@ const Login = () => {
 	);
 };
 
-export default Login
-
-
-
-
-  
+export default Login;

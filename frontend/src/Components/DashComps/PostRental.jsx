@@ -56,11 +56,7 @@ const PostRental = () => {
 		try {
 			const res = await axiosSecure
 				.post("/rentals/create", rentalForm)
-				.catch((err) =>
-					toast.error(err.response.data.msg, {
-						position: toast.POSITION.TOP_CENTER,
-					}),
-				);
+				
 			if (res.status === 200) {
 				try {
 					handleFileUploadToS3(
@@ -82,6 +78,9 @@ const PostRental = () => {
 							}
 						} catch (err) {
 							console.log(err);
+							toast.error(err.response.data.msg, {
+								position: toast.POSITION.TOP_CENTER,
+							});
 						}
 					});
 

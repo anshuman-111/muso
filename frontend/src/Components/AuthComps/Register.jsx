@@ -5,6 +5,9 @@ import logo from "../../assets/logo-svg.svg";
 import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../Hooks/AxiosInst";
+import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Register = () => {
 	const { user, isAuth } = useContext(AuthContext);
 	const nav = useNavigate();
@@ -52,16 +55,24 @@ const Register = () => {
 		const fetchCreate = async () => {
 			try {
 				const res = await axiosInstance.post("/users/register", registerForm);
-				if (res.status == 201) {
+
+				if (res && res.status == 201) {
 					//prettier-ignore
 					nav("/login");
 				}
 			} catch (err) {
 				console.log(err);
-				setMsg(err.response.data.msg);
-				setChecks({hasLength: false, hasNumber: false, hasPassMatch: false, hasSpecial: false})
+				toast.error(err?.response?.data?.email[0], {
+					position: toast.POSITION.TOP_CENTER,
+				});
+				setChecks({
+					hasLength: false,
+					hasNumber: false,
+					hasPassMatch: false,
+					hasSpecial: false,
+				});
 			} finally {
-				setRegisterForm({...registerForm, password: "", confirmPass: ""})
+				setRegisterForm({ ...registerForm, password: "", confirmPass: "" });
 			}
 		};
 		fetchCreate();
@@ -69,6 +80,7 @@ const Register = () => {
 
 	return (
 		<>
+			<ToastContainer />
 			<div className="flex min-h-full flex-1 flex-col justify-center px-6 py-0 lg:px-8">
 				<div className="sm:mx-auto sm:w-full sm:max-w-sm">
 					<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
@@ -255,12 +267,12 @@ const Register = () => {
 
 					<p className="mt-10 text-center text-sm text-gray-500">
 						Already a member?{" "}
-						<a
-							href="#"
+						<Link
+							to={"/login"}
 							className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
 						>
 							Sign In here
-						</a>
+						</Link>
 					</p>
 				</div>
 			</div>

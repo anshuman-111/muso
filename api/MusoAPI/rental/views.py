@@ -6,8 +6,7 @@ from rest_framework import status
 from .models import Rentals
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
-import boto3
-
+from .vision.image_fetcher import run_matching
 # Create your views here.
 class CreateRentalView(APIView):
     permission_classes= [IsAuthenticated]
@@ -126,3 +125,25 @@ class ImageURLUpload(APIView):
             return Response({"msg": "Display picture uploaded"}, status=status.HTTP_200_OK)
         except Rentals.DoesNotExist:
             return Response({"msg": "Cannot get rental"},status=status.HTTP_404_NOT_FOUND)
+        
+        
+class TriggerImageMatch(APIView):
+    #permission_classes = [IsAuthenticated]
+    
+    def get(self, request, rentalId):
+        try:
+            rental_exists = Rentals.objects.get(pk=rentalId)
+            if(rental_exists):
+                sum = 0
+                try:
+                    ssim_scoresheet = run_matching(rental_id=rentalId)
+                    for key in ssim_scoresheet:
+                        sum += ssim_scoresheet[key]
+                    sum = round(sum / 6, 2)
+                    return Response({'score' : sum}, status=status.HTTP_200_OK)
+                except TypeError:
+                    return Response({'msg' : 'Could not run matching'}, status=status.HTTP_404_NOT_FOUND)
+                
+        except Rentals.DoesNotExist:
+            return Response({'msg' : 'Rental does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        

@@ -1,14 +1,14 @@
 import React from "react";
 import { useContext, useState, useEffect } from "react";
 import AuthContext from "../context/AuthContext";
-import { axiosInstance } from "../Hooks/AxiosInst";
+import { axiosInstance, axiosSecureInstance } from "../Hooks/AxiosInst";
 import { useNavigate, useLocation } from "react-router-dom";
 const GetRental = () => {
 	const location = useLocation();
 	const data = location.state.data;
 	const { user } = useContext(AuthContext);
 	const nav = useNavigate();
-
+	const axiosSecure = axiosSecureInstance();
 	// Rental Form to Server
 	const [rentalTakeForm, setRentalTakeForm] = useState({
 		is_rental_active: true,
@@ -105,7 +105,7 @@ const GetRental = () => {
 	const handleRentalTakeFormSubmit = async (event) => {
 		event.preventDefault();
 		try {
-			const res = await axiosInstance.post(
+			const res = await axiosSecure.post(
 				`/rentals/takerental/${data?.rental_id}`,
 				rentalTakeForm,
 			);

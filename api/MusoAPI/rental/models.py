@@ -52,7 +52,7 @@ class Rentals(models.Model):
     rental_avail_end = models.DateTimeField(null=True)
     rental_image_url = models.CharField(null=True, blank=True, max_length=512)
     rental_return_approved_by_owner = models.BooleanField(null=True, blank=True)
-    
+    rental_matchscore = models.JSONField(null=True, blank=True)
     owner = models.ForeignKey(
         "users.AppUser", related_name="owner", null=True, on_delete=models.CASCADE
     )
