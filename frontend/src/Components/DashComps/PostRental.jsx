@@ -90,21 +90,25 @@ const PostRental = () => {
 							"display",
 						).then(() => {
 							try {
-								const urlRes = axiosSecure.post(
-									`/rentals/imageupload/${res.data}`,
-									{
+								const urlRes = axiosSecure
+									.post(`/rentals/imageupload/${res.data}`, {
 										img_url: `https://${
 											import.meta.env.VITE_AWS_S3_BUCKET
 										}.s3.${import.meta.env.VITE_AWS_S3_REGION}.amazonaws.com/${
 											res.data
 										}/display/${filename}`,
-									},
-								);
-								if (urlRes.status === 200) {
-									toast.update("Image upload in progress", {
-										position: toast.POSITION.TOP_CENTER,
-									});
-								}
+									})
+									.then(() =>
+										toast.dark("Image upload in progress", {
+											position: toast.POSITION.TOP_CENTER,
+										}),
+									)
+									.catch((err) =>
+										toast.error(err.response.data.msg, {
+											position: toast.POSITION.TOP_CENTER,
+										}),
+									);
+								
 							} catch (err) {
 								console.log(err);
 								toast.error(err.response.data.msg, {
