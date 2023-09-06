@@ -14,6 +14,24 @@ const PostRental = () => {
 			setLoading(false);
 		}, 300);
 	}, []);
+	const imageUploadSection = [
+		{
+			id: 1,
+			title: "front",
+		},
+		{
+			id: 2,
+			title: "back",
+		},
+		{
+			id: 3,
+			title: "left",
+		},
+		{
+			id: 4,
+			title: "right",
+		},
+	];
 	const { user } = useContext(AuthContext);
 	const nav = useNavigate();
 	const [ownerPictures, setOwnerPictures] = useState({
@@ -58,6 +76,9 @@ const PostRental = () => {
 			const res = await axiosSecure.post("/rentals/create", rentalForm);
 
 			if (res.status === 200) {
+				toast.success("Rental Created Successfully!", {
+					position: toast.POSITION.TOP_CENTER,
+				});
 				try {
 					if (
 						Object.values(ownerPictures).every((file) => file) &&
@@ -80,7 +101,9 @@ const PostRental = () => {
 									},
 								);
 								if (urlRes.status === 200) {
-									console.log("Display Image Uploaded");
+									toast.update("Image upload in progress", {
+										position: toast.POSITION.TOP_CENTER,
+									});
 								}
 							} catch (err) {
 								console.log(err);
@@ -94,6 +117,10 @@ const PostRental = () => {
 							Object.values(ownerPictures),
 							res.data,
 							"creation",
+						).then(() =>
+							toast.success("All Images uploaded Successfully!", {
+								position: toast.POSITION.TOP_CENTER,
+							}),
 						);
 					} else {
 						toast.error("Please upload all pictures to proceed", {
@@ -335,10 +362,10 @@ const PostRental = () => {
 								</div>
 								<div className="flex flex-col">
 									<label
-										htmlFor="front"
+										htmlFor="display"
 										className="block text-sm font-medium leading-6 text-gray-900"
 									>
-										This pcture will be displayed in the feed
+										This picture will be displayed in the feed
 									</label>
 									<div className="mt-2">
 										<input
@@ -375,151 +402,45 @@ const PostRental = () => {
 									</h2>
 								</div>
 								<div className="flex flex-col sm:flex-row gap-x-2">
-									<div className="flex flex-col">
-										<label
-											htmlFor="front"
-											className="block text-sm font-medium leading-6 text-gray-900"
-										>
-											Front
-										</label>
-										<div className="mt-2">
-											<input
-												id="front"
-												name="front"
-												type="file"
-												required
-												className="block w-full px-5 rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-												onChange={(e) =>
-													e.target.files.length > 0
-														? setOwnerPictures({
-																...ownerPictures,
+									{imageUploadSection.map(({ id, title }) => (
+										<div className="flex flex-col" key={id}>
+											<label
+												htmlFor={title}
+												className="block text-sm font-medium leading-6 text-gray-900 capitalize"
+											>
+												{title}
+											</label>
+											<div className="mt-2">
+												<input
+													id={title}
+													name={title}
+													type="file"
+													required
+													className="block w-full px-5 rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+													onChange={(e) =>
+														e.target.files.length > 0
+															? setOwnerPictures({
+																	...ownerPictures,
 
-																front: handleFileRenaming(
-																	e.target.files[0],
-																	"front",
-																),
-														  })
-														: ""
-												}
-											/>
-											<img
-												className="h-80 border-2 border-black p-1"
-												src={
-													ownerPictures.front
-														? URL.createObjectURL(ownerPictures.front)
-														: ""
-												}
-											/>
+																	[title]: handleFileRenaming(
+																		e.target.files[0],
+																		title,
+																	),
+															  })
+															: ""
+													}
+												/>
+												<img
+													className="h-80 border-2 border-black p-1"
+													src={
+														ownerPictures[title]
+															? URL.createObjectURL(ownerPictures[title])
+															: ""
+													}
+												/>
+											</div>
 										</div>
-									</div>
-									<div className="flex flex-col">
-										<label
-											htmlFor="back"
-											className="block text-sm font-medium leading-6 text-gray-900"
-										>
-											Back
-										</label>
-										<div className="mt-2">
-											<input
-												id="back"
-												name="back"
-												type="file"
-												required
-												className="block w-full px-5 rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-												onChange={(e) =>
-													e.target.files.length > 0
-														? setOwnerPictures({
-																...ownerPictures,
-																back: handleFileRenaming(
-																	e.target.files[0],
-																	"back",
-																),
-														  })
-														: ""
-												}
-											/>
-											<img
-												className="h-80 border-2 border-black p-1"
-												src={
-													ownerPictures.back
-														? URL.createObjectURL(ownerPictures.back)
-														: ""
-												}
-											/>
-										</div>
-									</div>
-									<div className="flex flex-col">
-										<label
-											htmlFor="left"
-											className="block text-sm font-medium leading-6 text-gray-900"
-										>
-											Left
-										</label>
-										<div className="mt-2">
-											<input
-												id="left"
-												name="left"
-												type="file"
-												required
-												className="block w-full px-5 rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-												onChange={(e) =>
-													e.target.files.length > 0
-														? setOwnerPictures({
-																...ownerPictures,
-																left: handleFileRenaming(
-																	e.target.files[0],
-																	"left",
-																),
-														  })
-														: ""
-												}
-											/>
-											<img
-												className="h-80 border-2 border-black p-1"
-												src={
-													ownerPictures.left
-														? URL.createObjectURL(ownerPictures.left)
-														: ""
-												}
-											/>
-										</div>
-									</div>
-									<div className="flex flex-col">
-										<label
-											htmlFor="right"
-											className="block text-sm font-medium leading-6 text-gray-900"
-										>
-											Right
-										</label>
-										<div className="mt-2">
-											<input
-												id="right"
-												name="right"
-												type="file"
-												required
-												className="block w-full px-5 rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-												onChange={(e) =>
-													e.target.files.length > 0
-														? setOwnerPictures({
-																...ownerPictures,
-																right: handleFileRenaming(
-																	e.target.files[0],
-																	"right",
-																),
-														  })
-														: ""
-												}
-											/>
-											<img
-												className="h-80 border-2 border-black p-1"
-												src={
-													ownerPictures.right
-														? URL.createObjectURL(ownerPictures.right)
-														: ""
-												}
-											/>
-										</div>
-									</div>
+									))}
 								</div>
 							</div>
 						</div>

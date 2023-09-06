@@ -136,12 +136,16 @@ class TriggerImageMatch(APIView):
             if(rental_exists):
                 sum = 0
                 try:
+                    
                     ssim_scoresheet = run_matching(rental_id=rentalId)
+                   
                     for key in ssim_scoresheet:
                         sum += ssim_scoresheet[key]
-                    sum = round(sum / 6, 2)
+                    sum = round(sum / len(ssim_scoresheet.keys()), 2)
+                    rental_exists.rental_matchscore = sum
                     return Response({'score' : sum}, status=status.HTTP_200_OK)
-                except TypeError:
+                except TypeError as e:
+                    print(e)
                     return Response({'msg' : 'Could not run matching'}, status=status.HTTP_404_NOT_FOUND)
                 
         except Rentals.DoesNotExist:

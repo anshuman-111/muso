@@ -22,22 +22,20 @@ class FilterBasedSearch(APIView):
             suburb = request.query_params.get('suburb')
             available_from = request.query_params.get('from')
             
-            min_price = float(min_price)
-            max_price = float(max_price)
+            
+            min_price = float(min_price) if len(min_price)>0 else 0
+            max_price = float(max_price) if len(max_price)>0 else 0
             print(request.query_params)
             if query:
-                print("query triggered")
                 rentals = rentals.filter(Q(rental_instrument_type__icontains=query) | Q(rental_title__icontains=query))
             
             if max_price and max_price > 0:
-                print("max triggered")
                 try:
                     
                     rentals = rentals.filter(rental_rate__lte=max_price)
                 except ValueError:
                     return Response({'msg': 'Max Price not a float'}, status=status.HTTP_404_NOT_FOUND)
             if min_price and min_price > 0:
-                print("min triggered")
                 try:
                     
                     rentals = rentals.filter(rental_rate__gte=min_price)
@@ -45,11 +43,9 @@ class FilterBasedSearch(APIView):
                     return Response({'msg': 'Min Price not a float'}, status=status.HTTP_404_NOT_FOUND)
             
             if suburb:
-                print("suburb triggered")
                 rentals = rentals.filter(rental_location__icontains=suburb)
                 
             if available_from:
-                print("from triggered")
                 try:
                     formatted_avail_date = date.fromisoformat(available_from)
                     rentals = rentals.filter(rental_avail_start__gte=formatted_avail_date)

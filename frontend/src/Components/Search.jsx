@@ -12,15 +12,22 @@ const Search = () => {
 		from: "",
 	});
 	console.log(searchFilters.from);
-
+	
 	useEffect(() => {
 		const resultsStoredInLS = localStorage.getItem("results");
+		const searchedOnInLS = JSON.parse(localStorage.getItem("searchedOn"));
+		console.log("Difference", Date.now() - searchedOnInLS);
+		if (Date.now() - searchedOnInLS > 20) {
+			setResults([]);
+		}
+
 		if (resultsStoredInLS) {
 			setResults(JSON.parse(resultsStoredInLS));
 		}
 	}, []);
 	const storeResults = (results) => {
 		localStorage.setItem("results", JSON.stringify(results));
+		localStorage.setItem("searchedOn", JSON.stringify(Date.now()));
 	};
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [results, setResults] = useState([]);
@@ -34,7 +41,6 @@ const Search = () => {
 					`feed/search?search=${searchFilters.query}&from=${searchFilters.from}&min=${searchFilters.min}&max=${searchFilters.max}&suburb=${searchFilters.suburb}`,
 				);
 				if (res.status === 200) {
-					console.log(res.data);
 					setResults(res?.data?.results);
 					storeResults(res?.data?.results);
 				}

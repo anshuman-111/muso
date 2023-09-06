@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 import AuthContext from "../context/AuthContext";
 import { suburbList } from "../utils/suburbData.cjs";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const EditDetails = () => {
 	const axiosSecure = axiosSecureInstance();
 	const [loading, setLoading] = useState(false);
@@ -89,19 +91,22 @@ const EditDetails = () => {
 			"Are you sure you want delete your account? This action is irreversible.",
 		);
 		if (deleteAction) {
-			try {
-				const res = await axiosSecure.post(`/users/delete/${username}`);
-				if (res.status === 200) {
+			const res = await axiosSecure
+				.post(`/users/delete/${username}`)
+				.then(() => {
 					logout();
 					navigate("/");
-				}
-			} catch (err) {
-				console.log(err);
-			}
+				})
+				.catch((err) =>
+					toast.error(err.response.data.msg, {
+						position: toast.POSITION.TOP_CENTER,
+					}),
+				);
 		}
 	};
 	return (
 		<>
+			<ToastContainer />
 			{loading ? (
 				<div className="text-center text-lg text-white">LOADING....</div>
 			) : (
@@ -236,65 +241,6 @@ const EditDetails = () => {
 								</div>
 							</div>
 						</div>
-
-						{/* <div className="border-b border-gray-900/10 pb-12">
-					<h2 className="text-base font-semibold leading-7 text-gray-900">
-						Notifications
-					</h2>
-
-					<div className="mt-1 space-y-4">
-						<fieldset>
-							<legend className="text-sm font-semibold leading-6 text-gray-900">
-								By Email
-							</legend>
-							<div className="mt-6 space-y-6">
-								<div className="relative flex gap-x-3">
-									<div className="flex h-6 items-center">
-										<input
-											id="comments"
-											name="comments"
-											type="checkbox"
-											className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-										/>
-									</div>
-									<div className="text-sm leading-6">
-										<label
-											htmlFor="comments"
-											className="font-medium text-gray-900"
-										>
-											Requests
-										</label>
-										<p className="text-gray-500">
-											Get notified when someones requests a rental.
-										</p>
-									</div>
-								</div>
-								<div className="relative flex gap-x-3">
-									<div className="flex h-6 items-center">
-										<input
-											id="candidates"
-											name="candidates"
-											type="checkbox"
-											className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-										/>
-									</div>
-									<div className="text-sm leading-6">
-										<label
-											htmlFor="candidates"
-											className="font-medium text-gray-900"
-										>
-											Expiring Rentals
-										</label>
-										<p className="text-gray-500">
-											Get notified when a rental is about to expire.{" "}
-											{"(10 hours before expiry)"}.
-										</p>
-									</div>
-								</div>
-							</div>
-						</fieldset>
-					</div>
-				</div> */}
 					</div>
 
 					<div className="mt-6 flex items-center justify-end gap-x-6">

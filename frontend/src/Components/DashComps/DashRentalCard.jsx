@@ -17,10 +17,10 @@ const DashRentalCard = ({ data, type }) => {
 		>
 			<div className="flex items-center justify-center">
 				<div className="max-w-sm w-full py-6 px-3">
-					<div className="bg-white shadow-xl rounded-lg overflow-hidden w-full h-[30rem]">
+					<div className="bg-white shadow-xl rounded-lg overflow-hidden w-full h-full">
 						<img
 							src={data?.rental_image_url}
-							className="bg-cover bg-center h-1/2 w-full overflow-hidden"
+							className="bg-cover h-[28.4rem]"
 						/>
 						<div className="p-4">
 							<p className="uppercase tracking-wide text-sm font-bold text-gray-700">

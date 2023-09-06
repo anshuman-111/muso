@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
-import { useContext, useState } from "react";
-import AuthContext from "../context/AuthContext";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import handleFileUploadToS3 from "../utils/AWSS3Upload";
 import { handleFileRenaming } from "../utils/FileRenameForUpload";
-import { axiosInstance, axiosSecureInstance } from "../Hooks/AxiosInst";
+import { axiosSecureInstance } from "../Hooks/AxiosInst";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { handleFileDownloadFromS3 } from "../utils/AWSS3Fetch";
@@ -14,6 +13,24 @@ const DashRentalDetails = () => {
 	const data = location.state.data.rentalData;
 	const type = location.state.data.type;
 
+	const imageUploadSection = [
+		{
+			id: 1,
+			title: "front",
+		},
+		{
+			id: 2,
+			title: "back",
+		},
+		{
+			id: 3,
+			title: "left",
+		},
+		{
+			id: 4,
+			title: "right",
+		},
+	];
 	const [filesRenterObj, setFilesRenterObj] = useState({
 		front: "",
 		back: "",
@@ -22,6 +39,19 @@ const DashRentalDetails = () => {
 	});
 
 	const [filesOwnerObj, setFilesOwnerObj] = useState({
+		front: "",
+		back: "",
+		left: "",
+		right: "",
+	});
+	const [filesFetchedRenterObj, setFilesFetchedRenterObj] = useState({
+		front: "",
+		back: "",
+		left: "",
+		right: "",
+	});
+
+	const [filesFetchedOwnerObj, setFilesFetchedOwnerObj] = useState({
 		front: "",
 		back: "",
 		left: "",
@@ -42,26 +72,27 @@ const DashRentalDetails = () => {
 	useEffect(() => {
 		if (type === "taken") {
 			handleFileDownloadFromS3(data?.rental_id, "completion").then((data) => {
-				setFilesRenterObj(data);
+				setFilesFetchedRenterObj(data);
 				setIsFetched(true);
 			});
 			fetchMatchScore();
 		}
 		if (type === "posted") {
 			handleFileDownloadFromS3(data?.rental_id, "creation").then((data) => {
-				setFilesOwnerObj(data);
+				setFilesFetchedOwnerObj(data);
 				setIsFetched(true);
 			});
 		}
 		if (type === "given") {
 			handleFileDownloadFromS3(data?.rental_id, "completion").then((data) => {
-				setFilesRenterObj(data);
+				setFilesFetchedRenterObj(data);
 				setIsFetched(true);
 			});
 			handleFileDownloadFromS3(data?.rental_id, "creation").then((data) => {
-				setFilesOwnerObj(data);
+				setFilesFetchedOwnerObj(data);
 				setIsFetched(true);
 			});
+			fetchMatchScore();
 		}
 	}, []);
 
@@ -69,14 +100,12 @@ const DashRentalDetails = () => {
 		try {
 			const res = axiosSecure
 				.post(`/rentals/delete/${data?.rental_id}`)
+				.then(() => window.history.back())
 				.catch((err) =>
 					toast.error(err.response.data.msg, {
 						position: toast.POSITION.TOP_CENTER,
 					}),
 				);
-			if (res.status == 200) {
-				window.history.back();
-			}
 		} catch (err) {
 			console.log("ERROR");
 		}
@@ -146,28 +175,46 @@ const DashRentalDetails = () => {
 								</p>
 							)}
 						</div>
+						{!(type === "posted") ? (
+							matchScore ? (
+								<div className="text-xl mt-3 text-white text-center">
+									Images uploaded by the Owner and You are{" "}
+									<span className="text-indigo-400 text-2xl">
+										{matchScore}%{" "}
+									</span>
+									similar
+								</div>
+							) : (
+								<p className="text-white text-xl">Loading ....</p>
+							)
+						) : (
+							""
+						)}
 					</div>
 					{!(type === "taken") && (
-						<>
+						<div className="flex flex-col">
 							<h1 className="my-5 text-white text-xl">
 								Images uploaded by you
 							</h1>
 							<div className="flex flex-row">
-								{Object.values(filesOwnerObj).map((fileSrc) => (
+								{Object.values(filesFetchedOwnerObj).map((fileSrc) => (
 									<img
 										className="h-80 border-2 border-black p-1"
 										src={fileSrc}
 									/>
 								))}
 							</div>
-						</>
+						</div>
 					)}
 
 					{type === "given" && (
 						<>
+							<h1 className="my-5 text-white text-xl">
+								Images uploaded by Renter
+							</h1>
 							{Object.values(filesRenterObj).length > 0 ? (
 								<div className="flex flex-row">
-									{Object.values(filesOwnerObj).map((fileSrc) => (
+									{Object.values(filesFetchedRenterObj).map((fileSrc) => (
 										<img
 											className="h-80 border-2 border-black p-1"
 											src={fileSrc}
@@ -184,6 +231,23 @@ const DashRentalDetails = () => {
 				</div>
 				{type === "taken" && (
 					<>
+						<h1 className="my-5 text-white text-xl">
+							Latest Files Uploaded By You
+						</h1>
+						{Object.values(filesRenterObj).length > 0 ? (
+							<div className="flex flex-row">
+								{Object.values(filesFetchedRenterObj).map((fileSrc) => (
+									<img
+										className="h-80 border-2 border-black p-1"
+										src={fileSrc}
+									/>
+								))}
+							</div>
+						) : (
+							<h1 className="my-5 text-white text-xl">
+								You have not uploaded any files
+							</h1>
+						)}
 						<div className="border-b border-gray-900/10 pb-2 pt-5 col-span-6">
 							<h2 className="sm:text-lg text-base font-semibold leading-7 text-gray-100">
 								Upload pictures of Front, Back, Left and Right sides of the
@@ -191,172 +255,59 @@ const DashRentalDetails = () => {
 							</h2>
 						</div>
 						<div className="flex flex-col sm:flex-row gap-x-2">
-							<div className="flex flex-col">
-								<label
-									htmlFor="front"
-									className="block text-sm font-medium leading-6 text-gray-100"
-								>
-									Front
-								</label>
-								<div className="mt-2">
-									<input
-										id="front"
-										name="front"
-										type="file"
-										required
-										className="block w-full px-5 rounded-md border-0 py-2 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-										onChange={(e) =>
-											e.target.files.length > 0
-												? setFilesRenterObj({
-														...filesRenterObj,
-														front: handleFileRenaming(
-															e.target.files[0],
-															"front",
-														),
-												  })
-												: ""
-										}
-									/>
-									<img
-										className="h-80 border-2 border-black p-1"
-										src={
-											isFetched
-												? filesRenterObj.front
-												: filesRenterObj.front
-												? URL.createObjectURL(filesRenterObj.front)
-												: ""
-										}
-									/>
+							{imageUploadSection.map(({ id, title }) => (
+								<div className="flex flex-col" key={id}>
+									<label
+										htmlFor={title}
+										className="block text-sm font-medium leading-6 text-gray-100"
+									>
+										{title}
+									</label>
+									<div className="mt-2">
+										<input
+											id={title}
+											name={title}
+											type="file"
+											required
+											className="block w-full px-5 rounded-md border-0 py-2 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+											onChange={(e) =>
+												e.target.files.length > 0
+													? setFilesRenterObj({
+															...filesRenterObj,
+															[title]: handleFileRenaming(
+																e.target.files[0],
+																title,
+															),
+													  })
+													: ""
+											}
+										/>
+										<img
+											className="h-80 border-2 border-black p-1"
+											src={
+												filesRenterObj[title]
+													? URL.createObjectURL(filesRenterObj[title])
+													: ""
+											}
+										/>
+									</div>
 								</div>
-							</div>
-							<div className="flex flex-col">
-								<label
-									htmlFor="back"
-									className="block text-sm font-medium leading-6 text-gray-100"
-								>
-									Back
-								</label>
-								<div className="mt-2">
-									<input
-										id="back"
-										name="back"
-										type="file"
-										required
-										className="block w-full px-5 rounded-md border-0 py-2 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-										onChange={(e) =>
-											e.target.files.length > 0
-												? setFilesRenterObj({
-														...filesRenterObj,
-														back: handleFileRenaming(e.target.files[0], "back"),
-												  })
-												: ""
-										}
-									/>
-									<img
-										className="h-80 border-2 border-black p-1"
-										src={
-											isFetched
-												? filesRenterObj.back
-												: filesRenterObj.back
-												? URL.createObjectURL(filesRenterObj.back)
-												: ""
-										}
-									/>
-								</div>
-							</div>
-							<div className="flex flex-col">
-								<label
-									htmlFor="left"
-									className="block text-sm font-medium leading-6 text-gray-100"
-								>
-									Left
-								</label>
-								<div className="mt-2">
-									<input
-										id="left"
-										name="left"
-										type="file"
-										required
-										className="block w-full px-5 rounded-md border-0 py-2 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-										onChange={(e) =>
-											e.target.files.length > 0
-												? setFilesRenterObj({
-														...filesRenterObj,
-														left: handleFileRenaming(e.target.files[0], "left"),
-												  })
-												: ""
-										}
-									/>
-									<img
-										className="h-80 border-2 border-black p-1"
-										src={
-											isFetched
-												? filesRenterObj.left
-												: filesRenterObj.left
-												? URL.createObjectURL(filesRenterObj.left)
-												: ""
-										}
-									/>
-								</div>
-							</div>
-							<div className="flex flex-col">
-								<label
-									htmlFor="right"
-									className="block text-sm font-medium leading-6 text-gray-100"
-								>
-									Right
-								</label>
-								<div className="mt-2">
-									<input
-										id="right"
-										name="right"
-										type="file"
-										required
-										className="block w-full px-5 rounded-md border-0 py-2 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-										onChange={(e) =>
-											e.target.files.length > 0
-												? setFilesRenterObj({
-														...filesRenterObj,
-														right: handleFileRenaming(
-															e.target.files[0],
-															"right",
-														),
-												  })
-												: ""
-										}
-									/>
-									<img
-										className="h-80 border-2 border-black p-1"
-										src={
-											isFetched
-												? filesRenterObj.right
-												: filesRenterObj.right
-												? URL.createObjectURL(filesRenterObj.right)
-												: ""
-										}
-									/>
-								</div>
+							))}
 
-								<button
-									className="px-4 py-2 h-24 w-32 bg-indigo-600 mt-10 text-white font-semibold"
-									onClick={() => {
-										Object.values(filesRenterObj).every((file) => file)
-											? handleFileUploadToS3(
-													Object.values(filesRenterObj),
-													data?.rental_id,
-													"completion",
-											  ).then(fetchMatchScore())
-											: window.alert("Please add all files before confirming.");
-									}}
-								>
-									Confirm Upload
-								</button>
-							</div>
-						</div>
-						<div className="text-xl mt-3 text-white text-center">
-							Images uploaded by the Owner and You are{" "}
-							<span className="text-red-400 text-2xl">{matchScore}% </span>
-							similar
+							<button
+								className="px-4 py-2 h-24 w-32 bg-indigo-600 mt-10 text-white font-semibold"
+								onClick={() => {
+									Object.values(filesRenterObj).every((file) => file)
+										? handleFileUploadToS3(
+												Object.values(filesRenterObj),
+												data?.rental_id,
+												"completion",
+										  ).then(fetchMatchScore())
+										: window.alert("Please add all files before confirming.");
+								}}
+							>
+								Confirm Upload
+							</button>
 						</div>
 					</>
 				)}

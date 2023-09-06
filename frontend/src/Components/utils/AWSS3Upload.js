@@ -3,7 +3,6 @@
 import AWS from "aws-sdk";
 const handleFileUploadToS3 = async (files, rentalId, type) => {
 
-
     try{
 
         
@@ -27,11 +26,14 @@ const handleFileUploadToS3 = async (files, rentalId, type) => {
 
 
         files.forEach( file => {
-            const path = foldername + file.name
+            if(file && file.name!==undefined && file.name.length > 0){
+                const path = foldername + file.name
             console.log(path)
             S3ServiceObj.upload({ Bucket: import.meta.env.VITE_AWS_S3_BUCKET, Key: path, Body: file}).promise().catch(async (err) => {
                 console.log(err)
             })
+            }
+            
         });
         console.log("created")
    

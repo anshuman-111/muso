@@ -47,6 +47,7 @@ def fetch_from_s3(rental_id):
 
     
     # Remove -1 for production
+    print(len(renter_image_paths),len(owner_image_paths))
     if(exists and len(renter_image_paths)==len(owner_image_paths)):
         for image in renter_image_paths:
             label = image['Key'].split('/')[-1].split('.')[0]
@@ -108,6 +109,10 @@ def run_matching(rental_id):
             if label=='right':
                 ssim_scoresheet['right2left'] = match_images(resized['owner']['right'], resized['renter']['left'])
             ssim_scoresheet[label] = match_images(resized['owner'][label], resized['renter'][label])
+            if(ssim_scoresheet['left2right'] < ssim_scoresheet['left'] and ssim_scoresheet['left2right'] < ssim_scoresheet['right']):
+                del ssim_scoresheet['left2right']
+            if(ssim_scoresheet['right2left'] < ssim_scoresheet['left'] and ssim_scoresheet['right2left'] < ssim_scoresheet['right']):
+                del ssim_scoresheet['right2left']
         return ssim_scoresheet
     except:
         raise TypeError("Matching could not be performed")
