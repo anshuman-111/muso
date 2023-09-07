@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { axiosSecureInstance } from "../Hooks/AxiosInst";
-import { useNavigate, useParams } from "react-router-dom";
-import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
-import { suburbList } from "../utils/suburbData.cjs";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const EditDetails = () => {

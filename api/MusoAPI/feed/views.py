@@ -6,12 +6,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
 from datetime import date
-# Create your views here.
 
-
-        
 class FilterBasedSearch(APIView):
-    
+    ''' Fetch Rentals based on search parameters from frontend request '''
     def get(self, request):
        
             rentals = Rentals.objects.filter(renter__isnull=True)
@@ -25,7 +22,7 @@ class FilterBasedSearch(APIView):
             
             min_price = float(min_price) if len(min_price)>0 else 0
             max_price = float(max_price) if len(max_price)>0 else 0
-            print(request.query_params)
+           
             if query:
                 rentals = rentals.filter(Q(rental_instrument_type__icontains=query) | Q(rental_title__icontains=query))
             
@@ -52,8 +49,7 @@ class FilterBasedSearch(APIView):
                 except:
                     return Response({'msg': 'Date type conflict'}, status=status.HTTP_404_NOT_FOUND)
                 
-                
-            print(rentals)
+            
             serializer = RentalCreateSerialzer(instance=rentals, many=True)
             return Response( { 'results' : serializer.data} , status=status.HTTP_200_OK)
     

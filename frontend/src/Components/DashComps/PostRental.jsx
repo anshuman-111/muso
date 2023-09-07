@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import handleFileUploadToS3 from "../utils/AWSS3Upload";
 import { handleFileRenaming } from "../utils/FileRenameForUpload";
 import { ToastContainer, toast } from "react-toastify";
+import { handleDateCompare } from "../utils/dateCompare";
 const PostRental = () => {
 	const [loading, setLoading] = useState(false);
 	const axiosSecure = axiosSecureInstance();
@@ -48,7 +49,7 @@ const PostRental = () => {
 	const [filename, setFilename] = useState("");
 	// Rental Form to Server
 	const [rentalForm, setRentalForm] = useState({
-		rental_frequency: "",
+		rental_frequency: "hour",
 		rental_avail_start: "",
 		rental_avail_end: "",
 		rental_rate: 0,
@@ -64,7 +65,10 @@ const PostRental = () => {
 	const [dateTypes, setDateTypes] = useState({
 		unit: "Hours",
 		maxLimit: 23,
-		today: new Date().toISOString().slice(0, -8),
+		today: () => {
+			const today = new Date();
+			return today.toISOString().split("T")[0];
+		},
 	});
 
 	// Changing form based on Rental Rate
@@ -72,6 +76,18 @@ const PostRental = () => {
 	const handleRentalFormSubmit = async (event) => {
 		event.preventDefault();
 		setLoading(true);
+		if (
+			!handleDateCompare(
+				rentalForm.rental_avail_start,
+				rentalForm.rental_avail_end,
+			)
+		) {
+			toast.error("Start Date Cannot be after End Date", {
+				position: toast.POSITION.TOP_CENTER,
+			});
+			return;
+		}
+
 		try {
 			const res = await axiosSecure.post("/rentals/create", rentalForm);
 
@@ -108,7 +124,6 @@ const PostRental = () => {
 											position: toast.POSITION.TOP_CENTER,
 										}),
 									);
-								
 							} catch (err) {
 								console.log(err);
 								toast.error(err.response.data.msg, {
@@ -224,7 +239,7 @@ const PostRental = () => {
 											type="date"
 											name="startdate"
 											id="startdate"
-											min={dateTypes.today}
+											min={dateTypes.today()}
 											placeholder="dd-mm-yyyy"
 											className="block w-full px-5 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 											onChange={(e) => {
@@ -250,7 +265,11 @@ const PostRental = () => {
 											type="date"
 											name="enddate"
 											id="enddate"
-											min={dateTypes.today}
+											min={
+												rentalForm.rental_avail_start
+													? rentalForm.rental_avail_start.split("T")[0]
+													: dateTypes.today()
+											}
 											placeholder="dd-mm-yyyy"
 											className="block w-full px-5 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 											onChange={(e) => {

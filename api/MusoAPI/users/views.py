@@ -12,6 +12,7 @@ from django.db.models import Q
 
 
 class RegisterView(APIView):
+    ''' Create New User '''
     def post(self, request):
         email = request.data.get('email')
         username = request.data.get('username')
@@ -29,6 +30,7 @@ class RegisterView(APIView):
        
 
 class LoginView(APIView):
+    ''' Login User '''
     def post(self, request):
         email = request.data["email"]
         password = request.data["password"]
@@ -46,6 +48,7 @@ class LoginView(APIView):
 
 
 class AuthTokenObtainPairSerializer(TokenObtainPairSerializer):
+    
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
@@ -55,31 +58,12 @@ class AuthTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class AuthTokenObtainPairView(TokenObtainPairView):
+    ''' Get Access and Refresh Token Pair'''
     serializer_class = AuthTokenObtainPairSerializer
 
 
-class isUser(APIView):
-    def post(self, request):
-        email = request.data["email"]
-        print(email)
-        try:
-            isUser = AppUser.objects.filter(email=email).exists()
-            if isUser:
-                return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
-            return Response(status=status.HTTP_200_OK)
-        except AppUser.DoesNotExist:
-            return Response(status=status.HTTP_200_OK)
-
-
-class LogoutView(APIView):
-    def post(self, request):
-        response = Response()
-        response.delete_cookie("JWTToken")
-        response.data = status.HTTP_200_OK
-        return response
-
-
 class SetDashboard(APIView):
+    ''' Setting Dashboard details for user '''
     def post(self, request):
         try:
             email = request.data["email"]
@@ -96,6 +80,7 @@ class SetDashboard(APIView):
 
 
 class GetDashboard(APIView):
+    ''' Fetching Dashboard details if they exist '''
     def get(self, request, username):
         try:
             user = AppUser.objects.get(username=username)
@@ -116,6 +101,7 @@ class GetDashboard(APIView):
 
 # CHECK IF USER HAS ANY ACTIVE RENTALS..if yes cannot delete account
 class DeleteAccount(APIView):
+    ''' Delete User account if no active rentals exist for the given user'''
     def post(self, request, username):
         try:
             user = AppUser.objects.get(username=username)

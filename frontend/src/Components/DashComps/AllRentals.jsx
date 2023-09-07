@@ -63,21 +63,21 @@ const AllRentals = () => {
 			{loading ? (
 				<div className="text-center text-lg text-white">LOADING....</div>
 			) : (
-				<div className="mx-auto max-w-2xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-					<h1 className="text-xl text-white p-5 mb-5">Rentals Given</h1>
-					<div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 xl:gap-x-8">
+				<div className=" max-w-2xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+					<h1 className="text-5xl text-white p-5 mb-5">Rentals Given</h1>
+					<div className="flex flex-row justify-start items-start overflow-x-scroll bg-cyan-900 gap-x-12 p-10">
 						{givenData.map((rental) => (
 							<DashRentalCard data={rental} type={"given"} />
 						))}
 					</div>
-					<h1 className="text-xl text-white p-5 mb-5">Rentals Taken</h1>
-					<div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 xl:gap-x-8">
+					<h1 className="text-5xl text-white p-5 mb-5">Rentals Taken</h1>
+					<div className="flex flex-row justify-start items-start overflow-x-scroll bg-gray-600 gap-x-12 p-10">
 						{takenData.map((rental) => (
 							<DashRentalCard data={rental} type={"taken"} />
 						))}
 					</div>
-					<h1 className="text-xl text-white p-5 mb-5">All Posted Rentals</h1>
-					<div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 xl:gap-x-8">
+					<h1 className="text-5xl text-white p-5 mb-5">All Posted Rentals</h1>
+					<div className="flex flex-row justify-start overflow-x-scroll bg-slate-800 gap-x-12 p-10">
 						{postedData.map((rental) => (
 							<DashRentalCard data={rental} type={"posted"} />
 						))}

@@ -11,13 +11,14 @@ const Search = () => {
 		min: 0,
 		from: "",
 	});
-	console.log(searchFilters.from);
-	
+
 	useEffect(() => {
 		const resultsStoredInLS = localStorage.getItem("results");
-		const searchedOnInLS = JSON.parse(localStorage.getItem("searchedOn"));
-		console.log("Difference", Date.now() - searchedOnInLS);
-		if (Date.now() - searchedOnInLS > 20) {
+		const searchedOnInLS = Number(
+			JSON.parse(localStorage.getItem("searchedOn")),
+		);
+		if (Number(Date.now() - searchedOnInLS) > 300000) {
+			localStorage.clear();
 			setResults([]);
 		}
 

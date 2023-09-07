@@ -1,6 +1,9 @@
-import React from "react";
-
+import { Link } from "react-router-dom";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext";
 const Intro = () => {
+	const user = useContext(AuthContext);
+
 	return (
 		<div className="transition-opacity delay-200 ease-in">
 			<div className="relative isolate pt-0 lg:px-8 z-40">
@@ -11,12 +14,12 @@ const Intro = () => {
 						</h1>
 
 						<div className="mt-10 flex items-center justify-center gap-x-6">
-							<a
-								href="/login"
+							<Link
+								to={user.isAuth ? `dashboard/${user?.user?.username}` : "login"}
 								className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm duration-500 ease-in-out  hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
 							>
 								Get started
-							</a>
+							</Link>
 							<a
 								href="/feed"
 								className="text-sm font-semibold leading-6 text-heading-light hover:bg-bg-secondary hover:text-black duration-500 ease-in-out p-2 rounded-md"

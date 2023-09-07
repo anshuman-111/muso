@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }) => {
 
 	const signOut = () => {
 		removeCookie("jwt", { path: "/" });
+		localStorage.clear();
 		setIsAuth(false);
 		setUser(null);
 	};

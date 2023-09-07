@@ -7,6 +7,14 @@ import numpy as np
 import cv2
 from io import BytesIO
 from .matcher import match_images
+
+'''
+    rental_folder_exists(rental_id) : Checks if the folder exists in the S3 Bucket
+    fetch_from_s3(rental_id): Fetches all the OWNER and RENTER Images from the S3 Bucket and constructs a dictionary of image paths
+    convert_to_bytes: Converts the images into a NumPy UINT8 Array and reads image as greyscale for processing
+    resize_images(path dictionary): Resizes images uploaded by renters to owner images for absolute pixel difference
+'''
+# Credentials Initialized
 load_dotenv()
 aws_access_key_id = os.getenv("AWS_S3_ACCKEY")
 aws_secret_key = os.getenv("AWS_S3_SECRET")
@@ -46,8 +54,8 @@ def fetch_from_s3(rental_id):
         }
 
     
-    # Remove -1 for production
-    print(len(renter_image_paths),len(owner_image_paths))
+  
+    
     if(exists and len(renter_image_paths)==len(owner_image_paths)):
         for image in renter_image_paths:
             label = image['Key'].split('/')[-1].split('.')[0]
@@ -91,28 +99,29 @@ def resize_images(aligned):
 
 
 def run_matching(rental_id):
-    try:
-        aligned = fetch_from_s3(rental_id)
-        resized = resize_images(aligned)
+    
+    aligned = fetch_from_s3(rental_id)
+    resized = resize_images(aligned)
 
-        ssim_scoresheet = {
-            'front': 0,
-            'back' : 0,
-            'left' : 0,
-            'left2right': 0,
-            'right2left' : 0,
-            'right' : 0
-        }
-        for label in resized['owner']:
-            if label=='left':
-                ssim_scoresheet['left2right'] = match_images(resized['owner']['left'], resized['renter']['right'])
-            if label=='right':
-                ssim_scoresheet['right2left'] = match_images(resized['owner']['right'], resized['renter']['left'])
-            ssim_scoresheet[label] = match_images(resized['owner'][label], resized['renter'][label])
-            if(ssim_scoresheet['left2right'] < ssim_scoresheet['left'] and ssim_scoresheet['left2right'] < ssim_scoresheet['right']):
-                del ssim_scoresheet['left2right']
-            if(ssim_scoresheet['right2left'] < ssim_scoresheet['left'] and ssim_scoresheet['right2left'] < ssim_scoresheet['right']):
-                del ssim_scoresheet['right2left']
-        return ssim_scoresheet
-    except:
-        raise TypeError("Matching could not be performed")
+    ssim_scoresheet = {
+        'front': 0,
+        'back' : 0,
+        'left' : 0,
+        'left2right': 0,
+        'right2left' : 0,
+        'right' : 0
+    }
+    
+    # Setting scoresheet for all images processed
+    for label in resized['owner']:
+        if label=='left':
+            ssim_scoresheet['left2right'] = match_images(resized['owner']['left'], resized['renter']['right'])
+        if label=='right':
+            ssim_scoresheet['right2left'] = match_images(resized['owner']['right'], resized['renter']['left'])
+        ssim_scoresheet[label] = match_images(resized['owner'][label], resized['renter'][label])
+        if(ssim_scoresheet['left2right'] < ssim_scoresheet['left'] and ssim_scoresheet['left2right'] < ssim_scoresheet['right']):
+            del ssim_scoresheet['left2right']
+        if(ssim_scoresheet['right2left'] < ssim_scoresheet['left'] and ssim_scoresheet['right2left'] < ssim_scoresheet['right']):
+            del ssim_scoresheet['right2left']
+    return ssim_scoresheet
+    

@@ -1,14 +1,15 @@
-from django.shortcuts import render
+
 from rest_framework.views import APIView
 from .serializers import RentalCreateSerialzer, RentalTakeSerialzer, RentalAllInfoSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Rentals
-from rest_framework.parsers import MultiPartParser
+
 from rest_framework.permissions import IsAuthenticated
 from .vision.image_fetcher import run_matching
 # Create your views here.
 class CreateRentalView(APIView):
+    ''' Create a new Rental '''
     permission_classes= [IsAuthenticated]
     def post(self, request):
         serializer = RentalCreateSerialzer(data=request.data)
@@ -21,6 +22,7 @@ class CreateRentalView(APIView):
 
 
 class DeleteRentalView(APIView):
+    ''' Delete Rental if it exists '''
     permission_classes= [IsAuthenticated]
     def post(self, request, rentalId):
         try:
@@ -42,9 +44,9 @@ class DeleteRentalView(APIView):
             )
 
 
-# DEVELOPER VIEW - REMOVE FROM PRODUCTION
+
 class ShowRentalsList(APIView):
-    
+    ''' Get All Rentals that have not been rented and have not expired '''
     def get(self, request):
         try:
             rental = Rentals.objects.filter(renter__isnull=True)
@@ -55,7 +57,7 @@ class ShowRentalsList(APIView):
 
 
 class GetRentalView(APIView):
-    
+    ''' Get Rental based on RentalID '''
     def get(self, request, rentalId):
         try:
             rental = Rentals.objects.get(pk=rentalId)
@@ -66,6 +68,7 @@ class GetRentalView(APIView):
 
 
 class GetPostedRentalView(APIView):
+    ''' Get All Rental POSTED by a USER '''
     permission_classes= [IsAuthenticated]
     def get(self, request, userId):
         try:
@@ -76,6 +79,7 @@ class GetPostedRentalView(APIView):
         return Response(serializer.data)
     
 class GetTakenRentalView(APIView):
+    ''' Get All Rental TAKEN by a USER '''
     permission_classes= [IsAuthenticated]
     def get(self, request, userId):
         try:
@@ -86,6 +90,7 @@ class GetTakenRentalView(APIView):
         return Response(serializer.data)
 
 class GetGivenRentalView(APIView):
+    ''' Get All Rental GIVEN OUT by a USER '''
     permission_classes= [IsAuthenticated]
     def get(self, request, userId):
         try:
@@ -97,6 +102,7 @@ class GetGivenRentalView(APIView):
 
 
 class TakeRental(APIView):
+    ''' Mark Rental as active '''
     permission_classes= [IsAuthenticated]
     def post(self, request, rentalId):
         try:
@@ -116,6 +122,7 @@ class TakeRental(APIView):
          
          
 class ImageURLUpload(APIView):
+    ''' Upload the Display image S3 URL for the rental '''
     permission_classes= [IsAuthenticated]
     def post(self, request, rentalId):
         try:
@@ -128,7 +135,8 @@ class ImageURLUpload(APIView):
         
         
 class TriggerImageMatch(APIView):
-    #permission_classes = [IsAuthenticated]
+    ''' Trigger Image Matching '''
+    permission_classes = [IsAuthenticated]
     
     def get(self, request, rentalId):
         try:

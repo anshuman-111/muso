@@ -3,8 +3,6 @@ from .views import (
     RegisterView,
     LoginView,
     AuthTokenObtainPairView,
-    LogoutView,
-    isUser,
     SetDashboard,
     GetDashboard,
     DeleteAccount
@@ -18,8 +16,6 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path("register", RegisterView.as_view()),
     path("login", LoginView.as_view()),
-    path("logout", LogoutView.as_view()),
-    path("isUser", isUser.as_view()),
     path("delete/<username>", DeleteAccount.as_view()),
     path("setDashboard", SetDashboard.as_view()),
     path("getDashboard/<username>", GetDashboard.as_view()),

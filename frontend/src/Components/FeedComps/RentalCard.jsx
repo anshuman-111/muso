@@ -23,18 +23,17 @@ const RentalCard = ({ data }) => {
 			<div className="flex items-center justify-center">
 				<div className="max-w-sm w-full py-6 px-3">
 					<div className="bg-white shadow-xl rounded-lg overflow-hidden w-full h-full">
-						<div>
-							<img
-								src={data?.rental_image_url}
-								className="bg-cover h-[30rem]"
-							/>
-						</div>
+						<div
+							className="h-[20rem] w-[15rem] bg-center bg-cover mx-auto"
+							style={{ backgroundImage: `url(${data?.rental_image_url})` }}
+						></div>
 						<div className="p-4 mt-6">
 							<p className="uppercase tracking-wide text-sm font-bold text-gray-700">
 								{data.rental_title}
 							</p>
 							<span className="text-3xl text-gray-900">
-								${data.rental_rate} per {data.rental_frequency}
+								${data.rental_rate.toString().split(".")[0]} per{" "}
+								{data.rental_frequency}
 							</span>
 						</div>
 						<div className="flex p-4 border-t border-gray-300 text-gray-700">

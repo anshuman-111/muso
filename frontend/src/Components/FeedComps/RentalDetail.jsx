@@ -49,7 +49,7 @@ const RentalDetail = () => {
 						</button>
 					</div>
 					<p className="title-font font-medium text-xl text-gray-100">
-						Wollongong
+						{data?.rental_location}
 					</p>
 					<p className="title-font font-medium text-sm text-gray-100">
 						Owned By {data?.owner_username}

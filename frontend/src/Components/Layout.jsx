@@ -1,13 +1,12 @@
-import { useEffect, useContext, useState } from 'react'
+import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import NavBar from "./NavBar";
 
-import Footer from "./Footer";
-import AuthContext from "./context/AuthContext";
 const Layout = () => {
 	const { pathname } = useLocation();
-	let user = useContext(AuthContext);
 	const [nav, setNav] = useState(true);
+
+	// Function to show only Dashboard NavBar
 	useEffect(() => {
 		if (pathname.startsWith("/dashboard")) {
 			setNav(false);
@@ -30,4 +29,4 @@ const Layout = () => {
 	);
 };
 
-export default Layout
+export default Layout;
