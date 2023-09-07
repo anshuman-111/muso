@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { axiosInstance } from "./Hooks/AxiosInst";
-import heroImg from "../assets/hero-image.jpg";
 import RentalCard from "./FeedComps/RentalCard";
 
 const Feed = () => {
