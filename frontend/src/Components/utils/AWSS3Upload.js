@@ -1,12 +1,16 @@
 
+import { S3Client } from '@aws-sdk/client-s3'
 
-import AWS from "aws-sdk";
 const handleFileUploadToS3 = async (files, rentalId, type) => {
 
     try{
 
         
-        const S3ServiceObj = new AWS.S3()
+        const S3ServiceObj = new S3Client({
+			accessKeyId: import.meta.env.VITE_AWS_S3_ACCKEY,
+			secretAccessKey: import.meta.env.VITE_AWS_S3_SECRET,
+			region: import.meta.env.VITE_AWS_S3_REGION,
+		},);
         var foldername = rentalId.toString()
         if(type==='display'){
             foldername = rentalId.toString()+"/display/"

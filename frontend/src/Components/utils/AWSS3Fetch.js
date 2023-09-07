@@ -1,9 +1,13 @@
-import AWS from 'aws-sdk'
+import { S3Client } from '@aws-sdk/client-s3'
 
 
 export const handleFileDownloadFromS3 = async (rentalId, type) => {
     
-    const S3ServiceObj = new AWS.S3()
+    const S3ServiceObj = new S3Client({
+        accessKeyId: import.meta.env.VITE_AWS_S3_ACCKEY,
+        secretAccessKey: import.meta.env.VITE_AWS_S3_SECRET,
+        region: import.meta.env.VITE_AWS_S3_REGION,
+    },)
     var foldername = rentalId.toString()
     const filesObj = {}
     if(type==="creation"){
