@@ -1,0 +1,7 @@
+services:
+  - name: web
+    startCommand: gunicorn MusoAPI.wsgi
+
+  # Optional: Run migrations during deployment
+  - name: migrations
+    buildCommand: python manage.py migrate
