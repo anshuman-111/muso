@@ -1,5 +1,5 @@
 
-import { S3Client } from '@aws-sdk/client-s3'
+import { S3Client, HeadObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
 
 const handleFileUploadToS3 = async (files, rentalId, type) => {
 
@@ -7,10 +7,14 @@ const handleFileUploadToS3 = async (files, rentalId, type) => {
 
         
         const S3ServiceObj = new S3Client({
-			accessKeyId: import.meta.env.VITE_AWS_S3_ACCKEY,
+            credentials: {
+                accessKeyId: import.meta.env.VITE_AWS_S3_ACCKEY,
 			secretAccessKey: import.meta.env.VITE_AWS_S3_SECRET,
+            },
+			
 			region: import.meta.env.VITE_AWS_S3_REGION,
 		},);
+
         var foldername = rentalId.toString()
         if(type==='display'){
             foldername = rentalId.toString()+"/display/"
@@ -22,18 +26,20 @@ const handleFileUploadToS3 = async (files, rentalId, type) => {
             throw new Error("Error occured! Tried to create folder without type.")
         }
         
-        await S3ServiceObj.headObject({Bucket: import.meta.env.VITE_AWS_S3_BUCKET, Key: foldername}).promise().catch(async (err) => {
-            if(err.code==="Not Found") {
-                await S3ServiceObj.putObject({Bucket: import.meta.env.VITE_AWS_S3_BUCKET, Key: foldername}).promise()
+        const headObject = new HeadObjectCommand({Bucket: import.meta.env.VITE_AWS_S3_BUCKET, Key: foldername})
+        const putObject = new PutObjectCommand({Bucket: import.meta.env.VITE_AWS_S3_BUCKET, Key: foldername})
+        await S3ServiceObj.send(headObject).catch(async (err) => {
+            if(err.name==="NotFound") {
+                await S3ServiceObj.send(putObject)
             }
         })
-
 
         files.forEach( file => {
             if(file && file.name!==undefined && file.name.length > 0){
                 const path = foldername + file.name
+                const putFile = new PutObjectCommand({Bucket: import.meta.env.VITE_AWS_S3_BUCKET, Key: path, Body: file})
             console.log(path)
-            S3ServiceObj.upload({ Bucket: import.meta.env.VITE_AWS_S3_BUCKET, Key: path, Body: file}).promise().catch(async (err) => {
+            S3ServiceObj.send(putFile).catch(async (err) => {
                 console.log(err)
             })
             }
