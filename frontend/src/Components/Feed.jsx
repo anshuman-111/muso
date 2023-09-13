@@ -11,7 +11,6 @@ const Feed = () => {
 				setLoading(true);
 				const res = await axiosInstance.get("/rentals/feed");
 				if (res.status === 200) {
-					console.log(res.data);
 					setFeed(res.data);
 					setLoading(false);
 				}

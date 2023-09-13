@@ -140,7 +140,7 @@ const DashRentalDetails = () => {
 						<div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5"></div>
 						<div className="flex">
 							<span className="title-font font-medium text-3xl text-gray-100">
-								${data?.rental_rate} per {data?.rental_frequency}
+								$ {data?.rental_rate} per {data?.rental_frequency}
 							</span>
 							{type === "posted" && (
 								<button
@@ -157,7 +157,7 @@ const DashRentalDetails = () => {
 							)}
 						</div>
 						<p className="title-font font-medium text-xl pt-2.5 text-gray-100">
-							Wollongong
+							{data?.rental_location}
 						</p>
 						<p className="title-font font-normal text-lg py-5 text-gray-100">
 							Owned By {data?.owner_username}

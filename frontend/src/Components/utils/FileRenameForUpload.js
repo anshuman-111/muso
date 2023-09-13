@@ -3,7 +3,7 @@ export const handleFileRenaming = (originalFile, filenameOnServer , setFilename)
     if (filenameOnServer === "display") {
         setFilename(filenameOnServer + "." + extension);
     }
-    console.log(filenameOnServer)
+  
     const newFile = new File(
         [originalFile],
         filenameOnServer + "." + extension,

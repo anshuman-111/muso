@@ -6,7 +6,7 @@ const RentalDetail = () => {
 	const location = useLocation();
 	const nav = useNavigate();
 	const data = location.state.data;
-	console.log(data);
+
 	return (
 		<div className="container px-5 py-24 mx-auto">
 			<button
@@ -41,7 +41,9 @@ const RentalDetail = () => {
 							className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
 							onClick={() =>
 								user.isAuth
-									? nav("/rentout/1", { state: { data: data } })
+									? nav(`/rentout/${data?.rental_id}`, {
+											state: { data: data },
+									  })
 									: nav("/login")
 							}
 						>

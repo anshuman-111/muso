@@ -59,14 +59,6 @@ const router = createBrowserRouter(
 );
 
 function App() {
-	// AWS.config.update({
-	// 	credentials: {
-	// 		accessKeyId: import.meta.env.VITE_AWS_S3_ACCKEY,
-	// 		secretAccessKey: import.meta.env.VITE_AWS_S3_SECRET,
-	// 		region: import.meta.env.VITE_AWS_S3_REGION,
-	// 	},
-	// });
-
 	return (
 		<AuthProvider>
 			<RouterProvider router={router} />

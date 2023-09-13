@@ -38,14 +38,14 @@ const handleFileUploadToS3 = async (files, rentalId, type) => {
             if(file && file.name!==undefined && file.name.length > 0){
                 const path = foldername + file.name
                 const putFile = new PutObjectCommand({Bucket: import.meta.env.VITE_AWS_S3_BUCKET, Key: path, Body: file})
-            console.log(path)
+            
             S3ServiceObj.send(putFile).catch(async (err) => {
                 console.log(err)
             })
             }
             
         });
-        console.log("created")
+      
    
 
     }catch(err){

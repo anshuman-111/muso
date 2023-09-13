@@ -18,19 +18,19 @@ const Login = () => {
 	const { user, login, msg } = useContext(AuthContext);
 
 	const showMsg = useCallback(() => {
-		toast.dark(msg, {
+		return toast.done(msg, {
 			position: toast.POSITION.TOP_CENTER,
 		});
 	}, [msg]);
 	useEffect(() => {
 		if (user !== null) {
 			setLoading(true);
-			toast.success("Successfully Logged In!", {
+			toast.success(msg, {
 				position: toast.POSITION.TOP_CENTER,
 			});
 			setTimeout(() => {
 				navigate("/"), setLoading(false);
-			}, 2000);
+			}, 1000);
 		}
 	}, [user]);
 
@@ -44,7 +44,7 @@ const Login = () => {
 	}, [loginForm]);
 
 	// Handle Login
-	const handleLogin = async () => {
+	const handleLogin = async (loginForm) => {
 		try {
 			await login(loginForm);
 			showMsg();
@@ -133,7 +133,7 @@ const Login = () => {
 									<button
 										type="button"
 										className="flex w-full mt-5 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-										onClick={() => handleLogin()}
+										onClick={() => handleLogin(loginForm)}
 									>
 										Sign in
 									</button>
