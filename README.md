@@ -28,9 +28,7 @@ The Musical Instrument Rental Platform is a web-based service that allows users 
 
 # Technology Stack
 
-## Technologies Used
-
-### Backend
+## Backend
 <ol>
     <li>Python</li>
     <li>Django Rest Framework</li>
@@ -38,14 +36,14 @@ The Musical Instrument Rental Platform is a web-based service that allows users 
     <li>OpenCV, Sci-image for Image Matching</li>
 </ol>
 
-### Frontend
+## Frontend
 <ol>
     <li>React JS</li>
     <li>Tailwind CSS</li>
     <li>HTML</li>
 </ol>
 
-### Cloud
+## Cloud
 <ol>
     <li>AWS S3</li>
     <li>AWS Lambda</li>
