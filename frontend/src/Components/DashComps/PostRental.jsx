@@ -364,6 +364,7 @@ const PostRental = () => {
 									</label>
 									<div className="mt-2">
 										<textarea
+											maxLength={140}
 											id="rentaldesc"
 											name="rentaldesc"
 											type="rentaldesc"
