@@ -62,7 +62,7 @@ const Register = () => {
 				}
 			} catch (err) {
 				console.log(err);
-				toast.error(err?.response?.data?.email[0], {
+				toast.error(err?.response?.data?.msg, {
 					position: toast.POSITION.TOP_CENTER,
 				});
 				setChecks({

@@ -3,7 +3,7 @@ import logo from "../assets/logo-svg.svg";
 import EditDetails from "./DashComps/EditDetails";
 import PostRental from "./DashComps/PostRental";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import AuthContext from "./context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,7 @@ const Dashboard = () => {
 	}
 	const { user, logout } = useContext(AuthContext);
 
-	const [activeTab, setActive] = useState("");
+	const [activeTab, setActive] = useState("User Profile");
 	const navigation = [
 		{
 			name: "User Profile",
@@ -177,7 +177,7 @@ const Dashboard = () => {
 
 										<div className="ml-3">
 											<div className="text-base font-medium leading-none text-white">
-												{user.name}
+												{user.username}
 											</div>
 											<div className="text-sm font-medium leading-none text-gray-400">
 												{user.email}
@@ -187,6 +187,7 @@ const Dashboard = () => {
 									<div className="mt-3 space-y-1 px-2">
 										{userNavigation.map((item) => (
 											<Disclosure.Button
+												onClick={handleSignOut}
 												key={item.name}
 												as="a"
 												href={item.href}

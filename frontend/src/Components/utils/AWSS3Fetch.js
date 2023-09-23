@@ -24,9 +24,11 @@ export const handleFileDownloadFromS3 = async (rentalId, type) => {
     await S3ServiceObj.send(listObjects).then((data)=>{
         data.Contents.forEach((file)=> {
             const key = file.Key.split('/').pop().split('.')[0]
-            filesObj[key] = `https://${import.meta.env.VITE_AWS_S3_BUCKET}.s3.${
+            if(key.length > 0){
+                filesObj[key] = `https://${import.meta.env.VITE_AWS_S3_BUCKET}.s3.${
                 import.meta.env.VITE_AWS_S3_REGION
             }.amazonaws.com/${file.Key}`
+            }
         })
     }).catch((err) => console.log(err))
    
