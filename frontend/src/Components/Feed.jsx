@@ -4,7 +4,7 @@ import RentalCard from "./FeedComps/RentalCard";
 
 const Feed = () => {
 	const [feed, setFeed] = useState([]);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -25,12 +25,18 @@ const Feed = () => {
 		<div className="">
 			<div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
 				<h2 className="sr-only">Products</h2>
-
-				<div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 xl:gap-x-8">
-					{feed.map((rental) => (
-						<RentalCard data={rental} />
-					))}
-				</div>
+				{loading ? (
+					<p className="text-2xl text-white font-bold text-center">
+						{" "}
+						LOADING . . .{" "}
+					</p>
+				) : (
+					<div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 xl:gap-x-8">
+						{feed.map((rental) => (
+							<RentalCard data={rental} />
+						))}
+					</div>
+				)}
 			</div>
 		</div>
 	);

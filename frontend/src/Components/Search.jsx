@@ -53,6 +53,11 @@ const Search = () => {
 
 		fetchResults();
 	};
+
+	const clearLS = () => {
+		localStorage.clear();
+		setResults([]);
+	};
 	return (
 		<>
 			<form
@@ -141,8 +146,21 @@ const Search = () => {
 					Search
 				</button>
 			</form>
-			<h1 className="text-md text-white font-bold">{LSFetchMsg}</h1>
-			<div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+			{results.length > 0 && (
+				<div className="text-xl text-red-200 font-bold text-center gap-y-3 flex flex-col mt-2">
+					{LSFetchMsg}{" "}
+					{LSFetchMsg.length > 0 && (
+						<button
+							className="bg-indigo-600 text-md text-white w-1/10 mx-auto p-2 rounded-xl"
+							onClick={() => clearLS()}
+						>
+							Clear Previous Search Results
+						</button>
+					)}
+				</div>
+			)}
+
+			<div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-8 lg:max-w-7xl lg:px-8">
 				<div className="grid mt-10 mx-auto grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 xl:gap-x-8">
 					{results.map((rental) => (
 						<RentalCard data={rental} />
