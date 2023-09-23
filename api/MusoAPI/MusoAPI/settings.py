@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
@@ -178,7 +178,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = [
-      "https://muso-frontend.onrender.com" # Replace with the actual URL of your React app
+      "https://muso-frontend.onrender.com", "http://localhost:5173" # Replace with the actual URL of your React app
 ]
 
 # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)

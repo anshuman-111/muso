@@ -8,8 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 const Login = () => {
 	const navigate = useNavigate();
 	const [loginForm, setLoginForm] = useState({
-		email: "",
-		password: "",
+		email: import.meta.env.VITE_BYPASS_EMAIL,
+		password: import.meta.env.VITE_BYPASS_PASSWORD,
 	});
 
 	const [displayMsg, setDisplayMsg] = useState("");
@@ -55,10 +55,6 @@ const Login = () => {
 		}
 	};
 
-	const loginBypassDetails = {
-		email: import.meta.env.VITE_BYPASS_EMAIL,
-		password: import.meta.env.VITE_BYPASS_PASSWORD,
-	};
 	return (
 		<>
 			<ToastContainer />
@@ -69,12 +65,6 @@ const Login = () => {
 				</p>
 			) : (
 				<div className="flex min-h-full flex-1 flex-col justify-center px-6 py-3 lg:px-8">
-					<button
-						className="bg-red-300 w-1/12 mx-auto h-16 rounded-xl hover:font-semibold"
-						onClick={() => login(loginBypassDetails)}
-					>
-						BYPASS LOGIN
-					</button>
 					<div className="sm:mx-auto sm:w-full sm:max-w-sm">
 						<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-bg-secondary">
 							Sign in to your account
@@ -96,6 +86,7 @@ const Login = () => {
 										name="email"
 										type="email"
 										autoComplete="email"
+										defaultValue="test@test.com"
 										required
 										className="block w-full rounded-md border-0 py-1.5 px-3 text-heading-dark shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 										onChange={(e) => {
@@ -120,6 +111,7 @@ const Login = () => {
 										name="password"
 										type="password"
 										autoComplete="current-password"
+										defaultValue="1wer@"
 										required
 										className="block w-full rounded-md border-0 py-1.5 px-3 text-heading-dark shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 										onChange={(e) => {
